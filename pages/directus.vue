@@ -47,14 +47,21 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   const { $directus, $readItems, $createItem, $updateItem, $deleteItem } = useNuxtApp()
 
-  const task = ref('')
-  const tasks = ref([])
+  const task = ref<string>('')
 
-  onMounted(async () => {
-    tasks.value = await $directus.request(
+  interface TaskItem {
+    task: string,
+    id: string,
+    done: boolean
+  }
+
+  const tasks = ref<TaskItem[]>([])
+
+  onMounted(async (): Promise<void> => {
+    tasks.value = await $directus.request<TaskItem[]>(
       $readItems(
         'tasks', { 
           fields: ['*'] 
@@ -63,10 +70,10 @@
     }
   )
 
-  async function addTask() {
+  async function addTask(): Promise<void> {
     if (!task.value.trim()) return
 
-    const newTask = await $directus.request(
+    const newTask = await $directus.request<TaskItem>(
       $createItem('tasks', { 
         task: task.value, done: false 
       })
@@ -76,21 +83,21 @@
     task.value = ''
   }
 
-  async function checkTask(id) {
+  async function checkTask(id: string): Promise<void> {
     const task = tasks.value.find(t => t.id === id)
     if (!task) return
 
     task.done = !task.done
 
-    await $directus.request(
+    await $directus.request<void>(
       $updateItem('tasks', id, { 
         done: task.done 
       }
     ))
   }
 
-  async function removeTask(id) {
-    await $directus.request(
+  async function removeTask(id: string): Promise<void> {
+    await $directus.request<void>(
       $deleteItem('tasks', id)
     )
     tasks.value = tasks.value.filter(t => t.id !== id)
