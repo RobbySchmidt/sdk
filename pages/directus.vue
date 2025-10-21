@@ -60,14 +60,13 @@
 
   const tasks = ref<TaskItem[]>([])
 
-  async function fetchTasks(): Promise<void> {
-    tasks.value = await $directus.request<TaskItem[]>(
-      $readItems(
-        'tasks', { 
-          fields: ['*'] 
-        }
-      ))
-    }
+  async function fetchTasks(): Promise<TaskItem[]> {
+    const result = await $directus.request<TaskItem[]>(
+      $readItems('tasks', { fields: ['*'] })
+    )
+    tasks.value = result
+    return result
+  }
 
   async function addTask(): Promise<void> {
     if (!task.value.trim()) return
