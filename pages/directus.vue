@@ -60,7 +60,7 @@
 
   const tasks = ref<TaskItem[]>([])
 
-  onMounted(async (): Promise<void> => {
+  async function fetchTasks(): Promise<void> {
     tasks.value = await $directus.request<TaskItem[]>(
       $readItems(
         'tasks', { 
@@ -68,19 +68,19 @@
         }
       ))
     }
-  )
 
   async function addTask(): Promise<void> {
     if (!task.value.trim()) return
 
-    const newTask = await $directus.request<TaskItem>(
+    await $directus.request<TaskItem>(
       $createItem('tasks', { 
         task: task.value, done: false 
       })
     )
 
-    tasks.value.push(newTask)
     task.value = ''
+
+    fetchTasks()
   }
 
   async function checkTask(id: string): Promise<void> {
@@ -91,17 +91,24 @@
 
     await $directus.request<void>(
       $updateItem('tasks', id, { 
-        done: task.done 
+        done: task.done
       }
     ))
+
+    fetchTasks()
   }
 
   async function removeTask(id: string): Promise<void> {
     await $directus.request<void>(
       $deleteItem('tasks', id)
     )
-    tasks.value = tasks.value.filter(t => t.id !== id)
+
+    fetchTasks()
   }
+
+  onMounted(async (): Promise<void> => {
+    await fetchTasks()
+  })
 </script>
 
 
