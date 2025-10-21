@@ -44,31 +44,39 @@
         </div>
       </li>
     </ul>
+
+    <pre>{{ tasks }}</pre>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { v4 as uuidv4 } from 'uuid';
 
-  const task = ref('')
-  const tasks = ref([])
+  const task = ref<string>('')
 
-  function addTask() {
+  interface TaskItem {
+    task: string,
+    id: string,
+    done: boolean
+  }
+
+  const tasks = ref<TaskItem[]>([])
+
+  function addTask(): void {
     if(task.value)
 
     tasks.value.push({ task: task.value, id: uuidv4(), done: false })
     task.value = ''
   }
 
-  function checkTask(id) {
-    const task = computed(() => {
-      return tasks.value.find(t => t.id === id)
-    })
-
-    task.value.done = !task.value.done
+  function checkTask(id: string): void {
+    const task = tasks.value.find(t => t.id === id)
+    if (task) {
+      task.done = !task.done
+    }
   }
 
-  function removeTask(id) {
+  function removeTask(id: string): void {
     tasks.value = tasks.value.filter(t => t.id !== id)
   }
 </script>
