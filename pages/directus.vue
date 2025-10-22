@@ -48,7 +48,6 @@
 </template>
 
 <script setup lang="ts">
-  const { $directus, $readItems, $createItem, $updateItem, $deleteItem } = useNuxtApp()
   const { getItems, createItems, updateItem, deleteItems } = useDirectusItems();
 
   const task = ref<string>('')
