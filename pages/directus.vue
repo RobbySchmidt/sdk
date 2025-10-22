@@ -112,7 +112,7 @@
   async function removeTask(id: string): Promise<void> {
     await deleteItems({ 
       collection: "tasks",
-       items: [id]
+        items: [id]
       });
 
     await fetchTasks()
