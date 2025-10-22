@@ -49,6 +49,7 @@
 
 <script setup lang="ts">
   const { $directus, $readItems, $createItem, $updateItem, $deleteItem } = useNuxtApp()
+  const { getItems, createItems, updateItem, deleteItems } = useDirectusItems();
 
   const task = ref<string>('')
 
@@ -60,49 +61,61 @@
 
   const tasks = ref<TaskItem[]>([])
 
-  async function fetchTasks(): Promise<TaskItem[]> {
-    const result = await $directus.request<TaskItem[]>(
-      $readItems('tasks', { fields: ['*'] })
-    )
-    tasks.value = result
-    return result
-  }
+  async function fetchTasks(): Promise<void> {
+    try {
+      const result = await getItems<TaskItem>({
+        collection: "tasks",
+        params: {
+          // filter: { 
+          //   task: "das"
+          // },
+        },
+      });
+
+      tasks.value = result
+    } catch (e) {}
+  };
 
   async function addTask(): Promise<void> {
-    if (!task.value.trim()) return
+    if (task.value)
 
-    await $directus.request<TaskItem>(
-      $createItem('tasks', { 
-        task: task.value, done: false 
-      })
-    )
+    await createItems<TaskItem>({ 
+      collection: "tasks",
+      items: { 
+        task: task.value, 
+        done: false 
+      }
+    });
 
     task.value = ''
 
-    fetchTasks()
+    await fetchTasks()
   }
 
   async function checkTask(id: string): Promise<void> {
     const task = tasks.value.find(t => t.id === id)
-    if (!task) return
+    if(!task) return
 
     task.done = !task.done
-
-    await $directus.request<void>(
-      $updateItem('tasks', id, { 
-        done: task.done
+    
+    await updateItem<TaskItem>({
+      collection: "tasks",
+      id: id,
+      item: { 
+        done: task.done 
       }
-    ))
+    });
 
-    fetchTasks()
+    await fetchTasks()
   }
 
   async function removeTask(id: string): Promise<void> {
-    await $directus.request<void>(
-      $deleteItem('tasks', id)
-    )
+    await deleteItems({ 
+      collection: "tasks",
+       items: [id]
+      });
 
-    fetchTasks()
+    await fetchTasks()
   }
 
   onMounted(async (): Promise<void> => {
