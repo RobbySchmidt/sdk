@@ -76,19 +76,21 @@
   };
 
   async function addTask(): Promise<void> {
-    if (task.value)
-
-    await createItems<TaskItem>({ 
-      collection: "tasks",
-      items: { 
-        task: task.value, 
-        done: false 
-      }
-    });
-
-    task.value = ''
-
-    await fetchTasks()
+    try {
+      if (task.value)
+  
+      await createItems<TaskItem>({ 
+        collection: "tasks",
+        items: { 
+          task: task.value, 
+          done: false 
+        }
+      });
+  
+      task.value = ''
+  
+      await fetchTasks()
+    } catch(e) {}
   }
 
   async function checkTask(id: string): Promise<void> {
