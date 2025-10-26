@@ -9,11 +9,11 @@
         class="border border-gray-300 rounded-md px-2 w-full"
         placeholder="add a new Task">
 
-        <button
-          type="submit" 
-          class="bg-green-500 text-white cursor-pointer px-2 py-1 rounded-md flex-none">
-          Add task
-        </button>
+      <button
+        type="submit" 
+        class="bg-green-500 text-white cursor-pointer px-2 py-1 rounded-md flex-none">
+        Add task
+      </button>
     </form>
 
     <ul>
@@ -64,20 +64,24 @@
 
   function addTask(): void {
     if(task.value)
+    tasks.value.push({task: task.value, id: uuidv4(), done: false})
 
-    tasks.value.push({ task: task.value, id: uuidv4(), done: false })
     task.value = ''
   }
 
   function checkTask(id: string): void {
     const task = tasks.value.find(t => t.id === id)
-    if (task) {
-      task.done = !task.done
-    }
+    if(task)
+
+    task.done = !task.done
   }
 
   function removeTask(id: string): void {
-    tasks.value = tasks.value.filter(t => t.id !== id)
+    const index = tasks.value.findIndex(t => t.id === id)
+
+    if(index !== -1) {
+      tasks.value.splice(index, 1)
+    }
   }
 </script>
 
