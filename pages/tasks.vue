@@ -50,6 +50,10 @@
 </template>
 
 <script setup lang="ts">
+  definePageMeta({
+    middleware: 'auth'
+  })
+  
   import { v4 as uuidv4 } from 'uuid';
 
   const task = ref<string>('')
